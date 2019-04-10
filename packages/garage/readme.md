@@ -12,10 +12,11 @@ This is for two doors, if you need only one, you can remove half of the code
 - For this to work, you need to install a momentary switch that will immitate the button press of your RF remote.
 - I used two sonoff basics flashed with tasmota and hooked them up inside the garage door machine, paralel to the RF remote signal.
    - On the [tasmota FW](https://github.com/arendst/Sonoff-Tasmota/wiki) you need to use some some `pulsetime` [command](https://github.com/arendst/Sonoff-Tasmota/wiki/Commands) on the console, and set it to somewhere between 200-1000ms.
-   - The sonoffs originally provide 220v to their output. I modded the boards [like this](https://community.home-assistant.io/t/modded-sonoff-using-the-on-board-relay-as-switch-for-any-circuit/50343) so that they would provide dry contacts and replicate the button presses of the garage door switches (i think they are 12v)
    - You also need to set  `poweronstate` to 0.
    - This code will not work with "non-self-inching" relays as the off command is handled on the tasmota (safer imo).
    - It should be easy to modify the code inside the scripts part for HA to handle the automatic OFF command (let me know)
+   - The sonoffs originally provide 220v to their output. I modded the boards [like this](https://community.home-assistant.io/t/modded-sonoff-using-the-on-board-relay-as-switch-for-any-circuit/50343) so that they would provide dry contacts and replicate the button presses of the garage door switches (i think they are 12v)
+
 
 **Installation on HA**  
 - Copy these files inside your `config/packages/garage` folder of your HA configuration. (it's better to download as zip then copy/paste them - or make sure you select the raw version of the file if downloading individually)
