@@ -1,0 +1,325 @@
+script:
+  
+  garage_up_operation:
+    alias: "Garage Up Toggle"
+    sequence:
+      - service: variable.set_variable
+        data:
+          variable: "garage_up_prev_use"
+          value_template: "{{(states.variable.garage_up_last_use.state)| int}}"
+      - service: variable.set_variable
+        data:
+          variable: "garage_up_last_use"
+          value_template: "{{(as_timestamp(now())| round(0))+(2*60*60)| int}}"
+      - service: script.turn_on
+        data_template:
+          entity_id: >
+            {% if is_state("input_select.garage_up_state", "Closed") %}
+              script.garage_up_closed
+            {% elif is_state("input_select.garage_up_state", "Opening") %}
+              script.garage_up_opening
+            {% elif is_state("input_select.garage_up_state", "Stopped Next Closing") %}
+              script.garage_up_stopped_next_closing
+            {% elif is_state("input_select.garage_up_state", "Stopped Next Opening") %}
+              script.garage_up_stopped_next_opening
+            {% elif is_state("input_select.garage_up_state", "Closing") %}
+              script.garage_up_closing
+            {% elif is_state("input_select.garage_up_state", "Open") %}
+              script.garage_up_open
+            {% endif %}
+  
+      
+  garage_up_closed:
+    alias: "When Garage Up Closed"
+    sequence:
+      - service: switch.turn_on
+        entity_id: switch.sonoff_garage_2
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.garage_up_state
+          option: "Opening"
+          
+      - delay:
+          seconds: "{{(states.variable.garage_up_total_time.state)| int}}"
+          
+      - service: variable.set_variable
+        data:
+          variable: "garage_up_position"
+          value_template: "{{(states.variable.garage_up_total_time.state)| int}}"
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.garage_up_state
+          option: "Open"
+          
+          
+          
+  garage_up_opening:
+    alias: "When Garage Up Opening"
+    sequence:
+      - service: switch.turn_on
+        entity_id: switch.sonoff_garage_2
+      - service: script.turn_off
+        entity_id: script.garage_up_closed, script.garage_up_stopped_next_opening #when opening it can only happen from scripts closed or stopped next opening
+      - service: variable.set_variable
+        data:
+          variable: "garage_up_position"
+          value_template: "{{(states.variable.garage_up_position.state)| int +(states.variable.garage_up_last_use.state)| int-(states.variable.garage_up_prev_use.state)| int}}"
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.garage_up_state
+          option: "Stopped Next Closing"
+  
+  
+  
+  garage_up_stopped_next_closing: #was Opening
+    alias: "When Garage Up Stopped, next: Closing"
+    sequence:
+      - service: switch.turn_on
+        entity_id: switch.sonoff_garage_2
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.garage_up_state
+          option: "Closing"
+          
+      - delay:
+          seconds: "{{(states.variable.garage_up_position.state)| int}}" #current position -> closed
+  
+      - service: variable.set_variable
+        data:
+          variable: "garage_up_position" 
+          value: "0" # set position 0
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.garage_up_state
+          option: "Closed"
+          
+          
+  garage_up_stopped_next_opening: #was Closing
+    alias: "When Garage Up Stopped, next: Opening"
+    sequence:
+      - service: switch.turn_on
+        entity_id: switch.sonoff_garage_2
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.garage_up_state
+          option: "Opening"
+  
+      - delay:
+          seconds: "{{(states.variable.garage_up_total_time.state)| int - (states.variable.garage_up_position.state)| int}}"
+  
+      - service: variable.set_variable
+        data:
+          variable: "garage_up_position"
+          value_template: "{{(states.variable.garage_up_total_time.state)| int}}"  # set position full open
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.garage_up_state
+          option: "Open"
+          
+          
+  garage_up_closing:
+    alias: "When Garage Up Closing"
+    sequence:
+      - service: switch.turn_on
+        entity_id: switch.sonoff_garage_2
+      - service: script.turn_off
+        entity_id: script.garage_up_open, script.garage_up_stopped_next_closing #when opening it can only happen from scripts open or stopped next opening
+      - service: variable.set_variable
+        data:
+          variable: "garage_up_position"
+          value_template: "{{(states.variable.garage_up_position.state)| int -((states.variable.garage_up_last_use.state)| int - (states.variable.garage_up_prev_use.state)| int)}}" #l(ast position - (last use -prec use))
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.garage_up_state
+          option: "Stopped Next Opening"
+          
+          
+        
+        
+        
+  garage_up_open:
+    alias: "When Garage Up Open"
+    sequence:
+      - service: switch.turn_on
+        entity_id: switch.sonoff_garage_2
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.garage_up_state
+          option: "Closing"
+          
+      - delay:
+          seconds: "{{(states.variable.garage_up_total_time.state)| int}}"
+          
+      - service: variable.set_variable
+        data:
+          variable: "garage_up_position"
+          value: "0"
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.garage_up_state
+          option: "Closed"
+          
+          
+          
+          
+          
+  garage_dn_operation:
+    alias: "Garage Dn Toggle"
+    sequence:
+      - service: variable.set_variable
+        data:
+          variable: "garage_dn_prev_use"
+          value_template: "{{(states.variable.garage_dn_last_use.state)| int}}"
+      - service: variable.set_variable
+        data:
+          variable: "garage_dn_last_use"
+          value_template: "{{(as_timestamp(now())| round(0))+(2*60*60)| int}}"
+      - service: script.turn_on
+        data_template:
+          entity_id: >
+            {% if is_state("input_select.garage_dn_state", "Closed") %}
+              script.garage_dn_closed
+            {% elif is_state("input_select.garage_dn_state", "Opening") %}
+              script.garage_dn_opening
+            {% elif is_state("input_select.garage_dn_state", "Stopped Next Closing") %}
+              script.garage_dn_stopped_next_closing
+            {% elif is_state("input_select.garage_dn_state", "Stopped Next Opening") %}
+              script.garage_dn_stopped_next_opening
+            {% elif is_state("input_select.garage_dn_state", "Closing") %}
+              script.garage_dn_closing
+            {% elif is_state("input_select.garage_dn_state", "Open") %}
+              script.garage_dn_open
+            {% endif %}
+            
+      
+  garage_dn_closed:
+    alias: "When Garage dn Closed"
+    sequence:
+      - service: switch.turn_on
+        entity_id: switch.sonoff_garage_1
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.garage_dn_state
+          option: "Opening"
+          
+      - delay:
+          seconds: "{{(states.variable.garage_dn_total_time.state)| int}}"
+          
+      - service: variable.set_variable
+        data:
+          variable: "garage_dn_position"
+          value_template: "{{(states.variable.garage_dn_total_time.state)| int}}"
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.garage_dn_state
+          option: "Open"
+          
+          
+          
+  garage_dn_opening:
+    alias: "When Garage dn Opening"
+    sequence:
+      - service: switch.turn_on
+        entity_id: switch.sonoff_garage_1
+      - service: script.turn_off
+        entity_id: script.garage_dn_closed, script.garage_dn_stopped_next_opening #when opening it can only happen from scripts closed or stopped next opening
+      - service: variable.set_variable
+        data:
+          variable: "garage_dn_position"
+          value_template: "{{(states.variable.garage_dn_position.state)| int +(states.variable.garage_dn_last_use.state)| int-(states.variable.garage_dn_prev_use.state)| int}}"
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.garage_dn_state
+          option: "Stopped Next Closing"
+  
+  
+  
+  garage_dn_stopped_next_closing: #was Opening
+    alias: "When Garage dn Stopped, next: Closing"
+    sequence:
+      - service: switch.turn_on
+        entity_id: switch.sonoff_garage_1
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.garage_dn_state
+          option: "Closing"
+          
+      - delay:
+          seconds: "{{(states.variable.garage_dn_position.state)| int}}" #current position -> closed
+  
+      - service: variable.set_variable
+        data:
+          variable: "garage_dn_position" 
+          value: "0" # set position 0
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.garage_dn_state
+          option: "Closed"
+          
+          
+  garage_dn_stopped_next_opening: #was Closing
+    alias: "When Garage dn Stopped, next: Opening"
+    sequence:
+      - service: switch.turn_on
+        entity_id: switch.sonoff_garage_1
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.garage_dn_state
+          option: "Opening"
+  
+      - delay:
+          seconds: "{{(states.variable.garage_dn_total_time.state)| int - (states.variable.garage_dn_position.state)| int}}"
+  
+      - service: variable.set_variable
+        data:
+          variable: "garage_dn_position"
+          value_template: "{{(states.variable.garage_dn_total_time.state)| int}}"  # set position full open
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.garage_dn_state
+          option: "Open"
+          
+          
+  garage_dn_closing:
+    alias: "When Garage dn Closing"
+    sequence:
+      - service: switch.turn_on
+        entity_id: switch.sonoff_garage_1
+      - service: script.turn_off
+        entity_id: script.garage_dn_open, script.garage_dn_stopped_next_closing #when opening it can only happen from scripts open or stopped next opening
+      - service: variable.set_variable
+        data:
+          variable: "garage_dn_position"
+          value_template: "{{(states.variable.garage_dn_position.state)| int -((states.variable.garage_dn_last_use.state)| int - (states.variable.garage_dn_prev_use.state)| int)}}" #l(ast position - (last use -prec use))
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.garage_dn_state
+          option: "Stopped Next Opening"
+          
+          
+        
+        
+        
+  garage_dn_open:
+    alias: "When Garage dn Open"
+    sequence:
+      - service: switch.turn_on
+        entity_id: switch.sonoff_garage_1
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.garage_dn_state
+          option: "Closing"
+          
+      - delay:
+          seconds: "{{(states.variable.garage_dn_total_time.state)| int}}"
+          
+      - service: variable.set_variable
+        data:
+          variable: "garage_dn_position"
+          value: "0"
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.garage_dn_state
+          option: "Closed"
+          
+          

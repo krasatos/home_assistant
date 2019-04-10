@@ -1,0 +1,19 @@
+variable:
+  garage_up_total_time:
+    value: 16
+  garage_up_position:
+    value: 0
+  garage_up_last_use:
+    value: 0
+  garage_up_prev_use:
+    value: 0
+    
+    
+  garage_dn_total_time:
+    value: 18
+  garage_dn_position:
+    value: 0
+  garage_dn_last_use:
+    value: 0
+  garage_dn_prev_use:
+    value: 0

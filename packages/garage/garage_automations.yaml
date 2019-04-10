@@ -1,0 +1,83 @@
+automation:
+  - id: '1542799052304'
+    alias: Notify - Garage Up Open
+    trigger:
+    - entity_id: sensor.garage_up_state
+      for: 00:01:00
+      platform: state
+      to: Stopped Next Closing
+    - entity_id: sensor.garage_up_state
+      for: 00:01:00
+      platform: state
+      to: Stopped Next Opening
+    - entity_id: sensor.garage_up_state
+      for: 00:01:00
+      platform: state
+      to: Open
+    - entity_id: sensor.garage_dn_state
+      for: 00:01:00
+      platform: state
+      to: Opening
+    - entity_id: sensor.garage_up_state
+      for: 00:10:00
+      platform: state
+      to: Stopped Next Closing
+    - entity_id: sensor.garage_up_state
+      for: 00:10:00
+      platform: state
+      to: Stopped Next Opening
+    - entity_id: sensor.garage_up_state
+      for: 00:10:00
+      platform: state
+      to: Open
+    - entity_id: sensor.garage_dn_state
+      for: 00:10:00
+      platform: state
+      to: Opening
+    condition: []
+    action:
+    - data:
+        message: Garage UP left Open {{ now().strftime('%H:%M')}}
+        title: Home Security
+      service: notify.notify_html5
+  - id: '1542799052604'
+    alias: Notify - Garage Dn Open
+    trigger:
+    - entity_id: sensor.garage_dn_state
+      for: 00:01:00
+      platform: state
+      to: Stopped Next Closing
+    - entity_id: sensor.garage_dn_state
+      for: 00:01:00
+      platform: state
+      to: Stopped Next Opening
+    - entity_id: sensor.garage_dn_state
+      for: 00:01:00
+      platform: state
+      to: Open
+    - entity_id: sensor.garage_dn_state
+      for: 00:01:00
+      platform: state
+      to: Opening
+    - entity_id: sensor.garage_dn_state
+      for: 00:10:00
+      platform: state
+      to: Stopped Next Closing
+    - entity_id: sensor.garage_dn_state
+      for: 00:10:00
+      platform: state
+      to: Stopped Next Opening
+    - entity_id: sensor.garage_dn_state
+      for: 00:10:00
+      platform: state
+      to: Open
+    - entity_id: sensor.garage_dn_state
+      for: 00:10:00
+      platform: state
+      to: Opening
+    condition: []
+    action:
+    - data:
+        message: Garage DOWN left Open {{ now().strftime('%H:%M')}}
+        title: Home Security
+      service: notify.notify_html5

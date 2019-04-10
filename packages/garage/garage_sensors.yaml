@@ -1,0 +1,9 @@
+sensor:
+  - platform: template
+    sensors:
+      garage_up_state:
+        friendly_name: "Γκαράζ Πάνω"
+        value_template: "{{ states.input_select.garage_up_state.state }}"
+      garage_dn_state:
+        friendly_name: "Γκαράζ Κάτω"
+        value_template: "{{ states.input_select.garage_dn_state.state}}"

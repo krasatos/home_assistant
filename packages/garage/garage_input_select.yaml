@@ -1,0 +1,24 @@
+input_select:
+  garage_up_state:
+    name: Garage UP State
+    initial: Closed
+    options:
+      - Closed
+      - Opening
+      - Stopped Next Closing
+      - Stopped Next Opening
+      - Closing
+      - Open
+      
+      
+  garage_dn_state:
+    name: Garage DN State
+    initial: Closed
+    options:
+      - Closed
+      - Opening
+      - Stopped Next Closing
+      - Stopped Next Opening
+      - Closing
+      - Open
+      

@@ -1,0 +1,87 @@
+switch:
+#### initializing mqtt sonoff switches. 
+#### Alternatively comment this out and name your momentary garage switches sonoff_garage_1 and 2 
+#### or make template switches with this naming to control your current momentary switches.
+
+  - platform: mqtt
+    name: "sonoff_garage_1" 
+    state_topic: "stat/sonoff_garage_dn/POWER"
+    command_topic: "cmnd/sonoff_garage_dn/power"
+    availability_topic: "tele/sonoff_garage_dn/LWT"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    retain: false
+  
+  - platform: mqtt
+    name: "sonoff_garage_2" 
+    state_topic: "stat/sonoff_garage_up/POWER"
+    command_topic: "cmnd/sonoff_garage_up/power"
+    availability_topic: "tele/sonoff_garage_up/LWT"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    payload_available: "Online"
+    payload_not_available: "Offline"
+    retain: false
+
+#### Template switches for overall control and custom icons.
+
+  - platform: template
+    switches:
+      garage_up_template_switch:
+        friendly_name: Garage Up
+        entity_id: 
+          - script.garage_up_operation
+          - input_select.garage_up_state
+        value_template: "{{ is_state('script.garage_up_operation' , 'on') }}"
+        turn_on:
+          service: script.turn_on
+          entity_id: script.garage_up_operation
+        turn_off:
+          service: script.turn_off
+          entity_id: script.garage_up_operation
+        entity_picture_template: >-
+          {% if is_state("input_select.garage_up_state", "Closed") %}
+            /local/images/icons/garage_door_closed.png
+          {% elif is_state("input_select.garage_up_state", "Opening") %}
+            /local/images/icons/garage_door_opening.png
+          {% elif is_state("input_select.garage_up_state", "Stopped Next Closing") %}
+            /local/images/icons/garage_door_stopped_next_closing.png
+          {% elif is_state("input_select.garage_up_state", "Stopped Next Opening") %}
+            /local/images/icons/garage_door_stopped_next_opening.png
+          {% elif is_state("input_select.garage_up_state", "Closing") %}
+            /local/images/icons/garage_door_closing.png
+          {% elif is_state("input_select.garage_up_state", "Open") %}
+            /local/images/icons/garage_door_open.png
+          {% endif %}
+          
+      garage_dn_template_switch:
+        friendly_name: Garage Down
+        entity_id: 
+          - script.garage_dn_operation
+          - input_select.garage_dn_state
+        value_template: "{{ is_state('script.garage_dn_operation' , 'on') }}"
+        turn_on:
+          service: script.turn_on
+          entity_id: script.garage_dn_operation
+        turn_off:
+          service: script.turn_off
+          entity_id: script.garage_dn_operation
+        entity_picture_template: >-
+          {% if is_state("input_select.garage_dn_state", "Closed") %}
+            /local/images/icons/garage_door_closed.png
+          {% elif is_state("input_select.garage_dn_state", "Opening") %}
+            /local/images/icons/garage_door_opening.png
+          {% elif is_state("input_select.garage_dn_state", "Stopped Next Closing") %}
+            /local/images/icons/garage_door_stopped_next_closing.png
+          {% elif is_state("input_select.garage_dn_state", "Stopped Next Opening") %}
+            /local/images/icons/garage_door_stopped_next_opening.png
+          {% elif is_state("input_select.garage_dn_state", "Closing") %}
+            /local/images/icons/garage_door_closing.png
+          {% elif is_state("input_select.garage_dn_state", "Open") %}
+            /local/images/icons/garage_door_open.png
+          {% endif %}
+          
