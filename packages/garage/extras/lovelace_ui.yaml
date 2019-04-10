@@ -1,0 +1,37 @@
+entities:
+  - head:
+      entity: switch.garage_up_template_switch
+      type: 'custom:toggle-lock-entity-row'
+    items:
+      - switch.sonoff_garage_2
+      - script.garage_up_operation
+      - input_select.garage_up_state
+      - variable.garage_up_last_use
+      - variable.garage_up_prev_use
+      - variable.garage_up_position
+      - variable.garage_up_total_time
+      - script.garage_up_closed
+      - script.garage_up_closing
+      - script.garage_up_open
+      - script.garage_up_opening
+      - script.garage_up_stopped_next_closing
+      - script.garage_up_stopped_next_opening
+    type: 'custom:fold-entity-row'
+  - head:
+      entity: switch.garage_dn_template_switch
+      type: 'custom:toggle-lock-entity-row'
+    items:
+      - switch.sonoff_garage_1
+      - script.garage_dn_operation
+      - input_select.garage_dn_state
+      - variable.garage_dn_last_use
+      - variable.garage_dn_prev_use
+      - variable.garage_dn_position
+      - variable.garage_dn_total_time
+      - script.garage_dn_closed
+      - script.garage_dn_closing
+      - script.garage_dn_open
+      - script.garage_dn_opening
+      - script.garage_dn_stopped_next_closing
+      - script.garage_dn_stopped_next_opening
+    type: 'custom:fold-entity-row'
