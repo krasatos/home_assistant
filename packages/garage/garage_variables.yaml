@@ -1,6 +1,6 @@
 variable:
   garage_up_total_time:
-    value: 16
+    value: 16 #change this according to your doors (in seconds)
   garage_up_position:
     value: 0
   garage_up_last_use:
@@ -10,7 +10,7 @@ variable:
     
     
   garage_dn_total_time:
-    value: 18
+    value: 18 #change this according to your doors (in seconds)
   garage_dn_position:
     value: 0
   garage_dn_last_use:
