@@ -3,7 +3,7 @@
 My code on garage operation based on timers, w/o magnetic sensors  
 
 **Description**  
-This package will control your garage doors and assume their position according to how much time passes between key presses.    
+This package will control your garage doors and assume their position according to how much time passes between key presses.     
 It also supports different icons, depending on the status of the door.    
 It will work with doors with a single switch that will cyce within modes: Open - Stop - Close etc.  
 This is for two doors, if you need only one, you can remove half of the code
@@ -91,7 +91,7 @@ packages: !include_dir_named packages/
 - You are good to go (i think) :)
 
 
-- Lastly, for it to work correctly you need to avoid using other sources (like rf-remotes) to control your doors. If you send a command to your door manually the code will not be able to calculate its position. In that case, i have included dropdown menus where you can set the realtime position of your door manuall and take it from there.
+- Lastly, for it to work correctly you need to avoid using other sources (like rf-remotes) to control your doors. If you send a command to your door manually the code will not be able to calculate its position. The same thing will happen if for any reason your door stops its operation manually, if it is equipped with an automatic obstacle detection or if ti faces some force, it will stop and will not update its state in HA. In that case, i have included dropdown menus where you can set the realtime position of your door manuall and take it from there.
 
 **Dependancies**:
 - https://github.com/rogro82/hass-variables
